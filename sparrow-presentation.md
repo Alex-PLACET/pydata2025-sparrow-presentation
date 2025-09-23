@@ -11,6 +11,38 @@ style: |
     text-align: center;
   }
   
+  .circle-img {
+    width: 120px !important;
+    height: 120px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+  
+  .invisible-table {
+    border: none !important;
+    border-collapse: collapse !important;
+    background: transparent !important;
+    margin: 0 auto !important;
+    border-spacing: 0 !important;
+  }
+  
+  .invisible-table td {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background: transparent !important;
+    padding: 20px !important;
+  }
+  
+  .invisible-table tr {
+    border: none !important;
+    background: transparent !important;
+  }
+  
 ---
 <!-- _class: centered -->
 
@@ -106,7 +138,6 @@ sp::primitive_array<int32_t> ar_slice = ar.slice(3, 5);
 sp::primitive_array<int32_t> ar_slice_view = ar.slice_view(3, 5);
 ```
 
-
 ```cpp
 ArrowArray* array_ptr = get_arrow_array(ar);
 ArrowSchema* schema_ptr = get_arrow_schema(ar);
@@ -115,11 +146,38 @@ auto [arrow_array, arrow_schema] = sp::get_arrow_structures(ar);
 ArrowArray array = extract_arrow_array(arr);
 ArrowSchema schema = extract_arrow_schema(arr);
 auto [arrow_array, arrow_schema] = extract_arrow_structures(arr);
+```
 
+```cpp
+sp::array ar(std::move(array), std::move(schema));
+ar.visit([]<class T>(const T& typed_ar)
+{
+    if constexpr (sp::is_primitive_array_v<T>)
+    {
+        std::for_each(typed_ar.cbegin(), typed_ar.cend(), [](const auto& val)
+        {
+            if (val.has_value())
+            {
+                std::cout << val.value();
+            }
+            else
+            {
+                std::cout << "null";
+            }
+            std::cout << ", ";
+        });
+    }
+    // else if constexpr ...
+});
 ```
 
 ---
 # Record batch
+
+```cpp
+sp::primitive_array<std::uint16_t> ar = { 1, 3, 5, 6, 9 };
+sp::string_array 
+```
 
 ---
 # Architecture
@@ -135,16 +193,38 @@ auto [arrow_array, arrow_schema] = extract_arrow_structures(arr);
 
 ---
 
-# Thanks !*
+# Thanks !
+<table class="invisible-table" style="table-layout: fixed; width: 600px;">
+  <tr>
+    <td style="text-align: center; width: 200px;">
+      <img src="resources/Alexis.png" class="circle-img"><br>
+      <strong>Alexis Placet</strong>
+    </td>
+    <td style="text-align: center; width: 200px;">
+      <img src="resources/Johann.png" class="circle-img"><br>
+      <strong>Johan Mabille</strong>
+    </td>
+    <td style="text-align: center; width: 200px;">
+      <img src="resources/Thorsten.png" class="circle-img"><br>
+      <strong>Thorsten Beier</strong>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 200px;">
+      <img src="resources/Joël.png" class="circle-img"><br>
+      <strong>Joël Lamotte</strong>
+    </td>
+    <td style="text-align: center; width: 200px;">
+      <img src="resources/Julien.png" class="circle-img"><br>
+      <strong>Julien Jerphanion</strong>
+    </td>
+    <td style="text-align: center; width: 200px;">
+      <img src="resources/Hind.png" class="circle-img"><br>
+      <strong>Hind Montassif</strong>
+    </td>
+  </tr>
+</table>
 
-The team:
-- Alexis Placet
-- Johan Mabille
-- Thorsten Beier 
-- Joël Lamotte
-- Julien Jerphanion
-- Hind Montassif
-
-- Github: TODO
+- Github: https://github.com/man-group/sparrow
 - Presentation: TODO
 - Live version: TODO
