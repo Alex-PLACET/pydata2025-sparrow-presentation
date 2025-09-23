@@ -93,8 +93,58 @@ zero_null_values() To wipe out the values of null elements.
 
 
 ```cpp
-
 ar.bitmap();
 ar.values();
+```
+```cpp
+ar.name();
+ar.metadata();
+```
+
+```cpp
+sp::primitive_array<int32_t> ar_slice = ar.slice(3, 5);
+sp::primitive_array<int32_t> ar_slice_view = ar.slice_view(3, 5);
+```
+
+
+```cpp
+ArrowArray* array_ptr = get_arrow_array(ar);
+ArrowSchema* schema_ptr = get_arrow_schema(ar);
+auto [arrow_array, arrow_schema] = sp::get_arrow_structures(ar);
+
+ArrowArray array = extract_arrow_array(arr);
+ArrowSchema schema = extract_arrow_schema(arr);
+auto [arrow_array, arrow_schema] = extract_arrow_structures(arr);
 
 ```
+
+---
+# Record batch
+
+---
+# Architecture
+
+---
+# What's next
+
+- aligned allocations
+- sparrow-ipc
+- mutability for unions, run end encoded, binary view, list and list view arrays
+- sparrow tables
+- computation kernels
+
+---
+
+# Thanks !*
+
+The team:
+- Alexis Placet
+- Johan Mabille
+- Thorsten Beier 
+- Joël Lamotte
+- Julien Jerphanion
+- Hind Montassif
+
+- Github: TODO
+- Presentation: TODO
+- Live version: TODO
