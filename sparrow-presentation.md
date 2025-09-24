@@ -4,11 +4,39 @@ lang: en
 paginate: true
 
 style: |
+  section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-top: 50px;
+  }
+  
   section.centered {
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
+  }
+  
+  pre {
+    font-size: 24px !important;
+    line-height: 1.4 !important;
+    margin: 10px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+  }
+  
+  code {
+    font-size: 24px !important;
+    font-family: Consolas, Monaco, monospace !important;
+  }
+  
+  pre code {
+    font-size: 24px !important;
+    white-space: pre !important;
   }
   
   .circle-img {
@@ -44,9 +72,9 @@ style: |
   }
   
 ---
-<!-- _class: centered -->
 
-<!-- ![bg](resources/cosmo_fly.png) -->
+
+![bg opacity:.1 ](resources/cosmo_victory.png)
 
 <h1>Sparrow, Pirates of the Apache Arrow</h1>
 <h2>PyData Paris 2025</h2>
@@ -60,46 +88,76 @@ Johan Mabille</h4>
 ![w:500 align-bottom-centered](resources/logo_scientific_computing.svg)
 
 ---
-
 # About
-
-- QuantStack is a company specializing in open-source software for data science and scientific computing.
-
-- Alexis Placet
-- Johan Mabille
-
----
-# Why Sparrow
-- Apache Arrow tabular format that became a standard
-- Huge monorepo, with a lot dependencies wihl some projects only need the memory format implementation (ArcticDB)
-- Apache Arrow started more than 10 years ago, and C++20 brought features that we could leverage on in a new freshly strated project
-
----
-# What is Sparrow
-- A C++20 implementation of the Apache Arrow memory format
-- C++20 idiomatic API: value semantics, ranges, iterators...
-- Typed and untyped arrays
-- Mutability of typed arrays
-- Convenient constructors and builders
-- Zero dependencies (except if you compile with libc++: P0355R7)
-- Pass full tests of Apache Arrow integration tests, compatible with formats from 1 to 1.5
-- std::formatters for all Sparrow types
-- Apache License v2
+<!-- ![bg width:600px opacity:.5 right](resources/cosmo_rocket.png) -->
+<table class="invisible-table" style="table-layout: fixed">
+    <tr>
+        <td>
+            <img src="resources/Alexis.png" class="circle-img">
+            <div style="text-align: center;"><strong>Alexis Placet</strong></div>
+            <div style="text-align: center;">Software Engineer</div>
+        </td>
+        <td>
+            <img src="resources/Johann.png" class="circle-img">
+            <div style="text-align: center;"><strong>Johan Mabille</strong></div>
+            <div style="text-align: center;">Project Director</div>
+        </td>
+    </tr>
+</table>
 
 ---
+# Why Sparrow ?
+- Apache Arrow's tabular format has become the industry standard
+- Apache Arrow is a huge monorepo with many dependencies, while some projects only need the memory format implementation (e.g., ArcticDB)
+- Apache Arrow started more than 10 years ago, and C++20 brought new features that we can leverage in a fresh, modern project
 
-# Exemple of usage
+---
+# What is Sparrow ?
+- A modern C++20 implementation of the Apache Arrow memory format
+- Idiomatic C++20 API featuring value semantics, ranges, and iterators
+- Support for both typed and untyped arrays
+- Full mutability for typed arrays
+- Convenient constructors and builders for easy usage
+- Zero dependencies (except when compiling with libc++: P0355R7 Timezone )
+- Passes all Apache Arrow integration tests, compatible with formats 1.0 to 1.5
+- Built-in std::formatters for all Sparrow types
+- Licensed under Apache License v2
+
+---
+
+# Nullable Values
+
+```cpp
+#include <sparrow/sparrow.hpp>
+namespace sp = sparrow;
+sp::nullable<int> n1;
+sp::nullable<int> n2 = 42;
+sp::nullable<int> n3 = sp::make_nullable(7, false);
+``` 
+
+---
+
+# Typed Array Construction
 
 ```cpp
 #include <sparrow/sparrow.hpp>
 namespace sp = sparrow;
 
-sp::primitive_array<int32_t> ar = { 1, 3, 5, 6, 9 };
+std::vector<int32_t> values = { 1, 3, 5, 6, 9 };
+sp::primitive_array<int32_t> ar = values;
+std::vector<bool> validity { true, true, false, true, true };
+sp::primitive_array<int32_t> ar{values, validity, "my_array", some_metadata};
+
+sp::u8buffer<int32_t> buffer{values};
+```
+
+```cpp
 static_assert(ar.size() == 5);
 static_assert(ar.front() == 1);
 static_assert(ar.back() == 9);
 ar[3] = 0;
 ar[4] = make_nullable(7, false);
+ar[4].get() = 10;
 static_assert(ar[4].has_value() == false);
 static_assert(ar[4].get() == 7); // still 7
 static_assert(ar[4].value_or(42) == 42);
@@ -117,12 +175,13 @@ for(const auto& v : ar) {
 }
 ```
 
-sparrow::nullable : Similar to std::optional but can hold a reference and does not call the destructor when set to null.
+
 
 zero_null_values() To wipe out the values of null elements.
 
 ---
 
+# Array Operations
 
 ```cpp
 ar.bitmap();
@@ -148,23 +207,20 @@ ArrowSchema schema = extract_arrow_schema(arr);
 auto [arrow_array, arrow_schema] = extract_arrow_structures(arr);
 ```
 
+---
+
+# Untyped Arrays
+
 ```cpp
 sp::array ar(std::move(array), std::move(schema));
+
 ar.visit([]<class T>(const T& typed_ar)
 {
     if constexpr (sp::is_primitive_array_v<T>)
     {
         std::for_each(typed_ar.cbegin(), typed_ar.cend(), [](const auto& val)
         {
-            if (val.has_value())
-            {
-                std::cout << val.value();
-            }
-            else
-            {
-                std::cout << "null";
-            }
-            std::cout << ", ";
+            std::cout << val;
         });
     }
     // else if constexpr ...
@@ -172,59 +228,75 @@ ar.visit([]<class T>(const T& typed_ar)
 ```
 
 ---
-# Record batch
+
+# Record Batch
 
 ```cpp
-sp::primitive_array<std::uint16_t> ar = { 1, 3, 5, 6, 9 };
-sp::string_array 
+sp::primitive_array<std::uint16_t> ar_int(
+    std::vector<std::uint16_t>{ 1, 3, 5, 6, 9 },
+    validity_bitmap{},
+    "my_primitives",
+    some_metadata);
+
+sp::string_array ar_str(
+    std::vector<std::string>{ "one", "three", "five", "six", "nine" },
+    validity_bitmap{},
+    "my_strings",
+    some_metadata);
+
+std::vector<array> arr_list{std::move(ar_int), std::move(ar_str)};
+
+sp::record_batch rb(std::move(arr_list), "my_record_batch", some_metadata);
 ```
 
 ---
+
 # Architecture
 
 ---
-# What's next
 
-- aligned allocations
+# What's Next
+
+- Aligned allocations
 - sparrow-ipc
-- mutability for unions, run end encoded, binary view, list and list view arrays
-- sparrow tables
-- computation kernels
+- Mutability for unions, run end encoded, binary view, list and list view arrays
+- Sparrow tables
+- Computation kernels
 
 ---
 
-# Thanks !
-<table class="invisible-table" style="table-layout: fixed; width: 600px;">
+# Thanks!
+
+- Github: https://github.com/man-group/sparrow 
+- Available on CondaForge, VCPKG and Conan
+- Presentation: TODO
+<table class="invisible-table" style="table-layout: fixed">
   <tr>
     <td style="text-align: center; width: 200px;">
-      <img src="resources/Alexis.png" class="circle-img"><br>
+      <img src="resources/Alexis.png" class="circle-img">
       <strong>Alexis Placet</strong>
     </td>
     <td style="text-align: center; width: 200px;">
-      <img src="resources/Johann.png" class="circle-img"><br>
+      <img src="resources/Johann.png" class="circle-img">
       <strong>Johan Mabille</strong>
     </td>
     <td style="text-align: center; width: 200px;">
-      <img src="resources/Thorsten.png" class="circle-img"><br>
+      <img src="resources/Thorsten.png" class="circle-img">
       <strong>Thorsten Beier</strong>
     </td>
   </tr>
   <tr>
     <td style="text-align: center; width: 200px;">
-      <img src="resources/Joël.png" class="circle-img"><br>
+      <img src="resources/Joël.png" class="circle-img">
       <strong>Joël Lamotte</strong>
     </td>
     <td style="text-align: center; width: 200px;">
-      <img src="resources/Julien.png" class="circle-img"><br>
+      <img src="resources/Julien.png" class="circle-img">
       <strong>Julien Jerphanion</strong>
     </td>
     <td style="text-align: center; width: 200px;">
-      <img src="resources/Hind.png" class="circle-img"><br>
+      <img src="resources/Hind.png" class="circle-img">
       <strong>Hind Montassif</strong>
     </td>
   </tr>
 </table>
-
-- Github: https://github.com/man-group/sparrow
-- Presentation: TODO
-- Live version: TODO
