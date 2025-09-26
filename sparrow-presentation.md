@@ -38,10 +38,19 @@ style: |
     font-size: 24px !important;
     white-space: pre !important;
   }
+
+  .circle-img-big {
+    width: 200px !important;
+    height: 200px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
   
   .circle-img {
-    width: 120px !important;
-    height: 120px !important;
+    width: 100px !important;
+    height: 100px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     display: block !important;
@@ -93,12 +102,12 @@ Johan Mabille</h4>
 <table class="invisible-table" style="table-layout: fixed">
     <tr>
         <td>
-            <img src="resources/Alexis.png" class="circle-img">
+            <img src="resources/Alexis.png" class="circle-img-big">
             <div style="text-align: center;"><strong>Alexis Placet</strong></div>
             <div style="text-align: center;">Software Engineer</div>
         </td>
         <td>
-            <img src="resources/Johann.png" class="circle-img">
+            <img src="resources/Johann.png" class="circle-img-big">
             <div style="text-align: center;"><strong>Johan Mabille</strong></div>
             <div style="text-align: center;">Project Director</div>
         </td>
@@ -125,129 +134,9 @@ Johan Mabille</h4>
 
 ---
 
-# Nullable Values
 
-```cpp
-#include <sparrow/sparrow.hpp>
-namespace sp = sparrow;
-sp::nullable<int> n1;
-sp::nullable<int> n2 = 42;
-sp::nullable<int> n3 = sp::make_nullable(7, false);
-``` 
-
----
-
-# Typed Array Construction
-
-```cpp
-#include <sparrow/sparrow.hpp>
-namespace sp = sparrow;
-
-std::vector<int32_t> values = { 1, 3, 5, 6, 9 };
-sp::primitive_array<int32_t> ar = values;
-std::vector<bool> validity { true, true, false, true, true };
-sp::primitive_array<int32_t> ar{values, validity, "my_array", some_metadata};
-
-sp::u8buffer<int32_t> buffer{values};
-```
-
-```cpp
-static_assert(ar.size() == 5);
-static_assert(ar.front() == 1);
-static_assert(ar.back() == 9);
-ar[3] = 0;
-ar[4] = make_nullable(7, false);
-ar[4].get() = 10;
-static_assert(ar[4].has_value() == false);
-static_assert(ar[4].get() == 7); // still 7
-static_assert(ar[4].value_or(42) == 42);
-try {
-  ar.at(3); // throws
-} catch(...) {
-}
-ar.push_back(11);
-ar.pop_back();
-ar.insert(ar.begin() + 2, 4);
-ar.resize(20, sp::make_nullable(0, false)); 
-
-for(const auto& v : ar) {
-  std::cout << v << " ";
-}
-```
-
-
-
-zero_null_values() To wipe out the values of null elements.
-
----
-
-# Array Operations
-
-```cpp
-ar.bitmap();
-ar.values();
-```
-```cpp
-ar.name();
-ar.metadata();
-```
-
-```cpp
-sp::primitive_array<int32_t> ar_slice = ar.slice(3, 5);
-sp::primitive_array<int32_t> ar_slice_view = ar.slice_view(3, 5);
-```
-
-```cpp
-ArrowArray* array_ptr = get_arrow_array(ar);
-ArrowSchema* schema_ptr = get_arrow_schema(ar);
-auto [arrow_array, arrow_schema] = sp::get_arrow_structures(ar);
-
-ArrowArray array = extract_arrow_array(arr);
-ArrowSchema schema = extract_arrow_schema(arr);
-auto [arrow_array, arrow_schema] = extract_arrow_structures(arr);
-```
-
----
-
-# Untyped Arrays
-
-```cpp
-sp::array ar(std::move(array), std::move(schema));
-
-ar.visit([]<class T>(const T& typed_ar)
-{
-    if constexpr (sp::is_primitive_array_v<T>)
-    {
-        std::for_each(typed_ar.cbegin(), typed_ar.cend(), [](const auto& val)
-        {
-            std::cout << val;
-        });
-    }
-    // else if constexpr ...
-});
-```
-
----
-
-# Record Batch
-
-```cpp
-sp::primitive_array<std::uint16_t> ar_int(
-    std::vector<std::uint16_t>{ 1, 3, 5, 6, 9 },
-    validity_bitmap{},
-    "my_primitives",
-    some_metadata);
-
-sp::string_array ar_str(
-    std::vector<std::string>{ "one", "three", "five", "six", "nine" },
-    validity_bitmap{},
-    "my_strings",
-    some_metadata);
-
-std::vector<array> arr_list{std::move(ar_int), std::move(ar_str)};
-
-sp::record_batch rb(std::move(arr_list), "my_record_batch", some_metadata);
-```
+![bg opacity:.5 ](resources/cosmo_fly.png)
+# Demo time !
 
 ---
 
@@ -269,7 +158,6 @@ sp::record_batch rb(std::move(arr_list), "my_record_batch", some_metadata);
 
 - Github: https://github.com/man-group/sparrow 
 - Available on CondaForge, VCPKG and Conan
-- Presentation: TODO
 <table class="invisible-table" style="table-layout: fixed">
   <tr>
     <td style="text-align: center; width: 200px;">
