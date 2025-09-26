@@ -82,7 +82,6 @@ style: |
   
 ---
 
-
 ![bg opacity:.1 ](resources/cosmo_victory.png)
 
 <h1>Sparrow, Pirates of the Apache Arrow</h1>
@@ -90,26 +89,25 @@ style: |
 <h3>2025-09-30</h3>
 <h4>Alexis Placet<br>
 Johan Mabille</h4>
-<!-- <div style="text-align: center;">
-  <img src="resources/logo_scientific_computing.svg" width="600">
-</div> -->
+<br>
+<br>
 
-![w:500 align-bottom-centered](resources/logo_scientific_computing.svg)
+![w:500 align-center](resources/logo_scientific_computing.svg)
 
 ---
 # About
-<!-- ![bg width:600px opacity:.5 right](resources/cosmo_rocket.png) -->
+
 <table class="invisible-table" style="table-layout: fixed">
     <tr>
         <td>
             <img src="resources/Alexis.png" class="circle-img-big">
-            <div style="text-align: center;"><strong>Alexis Placet</strong></div>
-            <div style="text-align: center;">Software Engineer</div>
+            <strong>Alexis Placet</strong></br>
+            Software Engineer
         </td>
         <td>
             <img src="resources/Johann.png" class="circle-img-big">
-            <div style="text-align: center;"><strong>Johan Mabille</strong></div>
-            <div style="text-align: center;">Project Director</div>
+            <strong>Johan Mabille</strong></br>
+            Project Director
         </td>
     </tr>
 </table>
@@ -122,10 +120,9 @@ Johan Mabille</h4>
 
 ---
 # What is Sparrow ?
-- A modern C++20 implementation of the Apache Arrow memory format
-- Idiomatic C++20 API featuring value semantics, ranges, and iterators
+- A modern and idiomatic C++20 implementation of the Apache Arrow memory format featuring value semantics, ranges, and iterators ...
 - Support for both typed and untyped arrays
-- Full mutability for typed arrays
+- Mutability for typed arrays
 - Convenient constructors and builders for easy usage
 - Zero dependencies (except when compiling with libc++: P0355R7 Timezone )
 - Passes all Apache Arrow integration tests, compatible with formats 1.0 to 1.5
@@ -133,7 +130,6 @@ Johan Mabille</h4>
 - Licensed under Apache License v2
 
 ---
-
 
 ![bg opacity:.5 ](resources/cosmo_fly.png)
 # Demo time !
