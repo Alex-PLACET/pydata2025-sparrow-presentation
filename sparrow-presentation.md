@@ -2,9 +2,10 @@
 marp: true
 lang: en
 paginate: true
+footer: ![height:20px](resources/github.svg) @Alex-PLACET @JohanMabille @QuantStack
 
 style: |
-  section {
+  section.top {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -12,11 +13,10 @@ style: |
     padding-top: 50px;
   }
   
-  section.centered {
+  section {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    text-align: center;
   }
   
   pre {
@@ -63,8 +63,9 @@ style: |
     background: transparent !important;
     margin: 0 auto !important;
     border-spacing: 0 !important;
+    table-layout: fixed !important;
   }
-  
+
   .invisible-table td {
     border: none !important;
     border-top: none !important;
@@ -79,8 +80,13 @@ style: |
     border: none !important;
     background: transparent !important;
   }
-  
 ---
+
+<style>
+section::after {
+  content: attr(data-marpit-pagination) '/' attr(data-marpit-pagination-total);
+}
+</style>
 
 ![bg opacity:.1 ](resources/cosmo_victory.png)
 
@@ -97,37 +103,45 @@ Johan Mabille</h4>
 ---
 # About
 
-<table class="invisible-table" style="table-layout: fixed">
+<table class="invisible-table">
     <tr>
         <td>
             <img src="resources/Alexis.png" class="circle-img-big">
             <strong>Alexis Placet</strong></br>
-            Software Engineer
+            Software Engineer at QuantStack
+            Contributor to Apache Arrow, sparrow
         </td>
         <td>
             <img src="resources/Johann.png" class="circle-img-big">
             <strong>Johan Mabille</strong></br>
-            Project Director
+            Technical Director at QuantStack
+            Contributor to Jupyter, mamba, xtensor
         </td>
     </tr>
 </table>
 
 ---
 # Why Sparrow ?
-- Apache Arrow's tabular format has become the industry standard
-- Apache Arrow is a huge monorepo with many dependencies, while some projects only need the memory format implementation (e.g., ArcticDB)
-- Apache Arrow started more than 10 years ago, and C++20 brought new features that we can leverage in a fresh, modern project
+* Apache Arrow's tabular format has become the industry standard
+* Apache Arrow is a huge monorepo with many dependencies, while some projects only need the memory format implementation (e.g., ArcticDB)
+* Apache Arrow started more than 10 years ago, and C++20 brought new features that we can leverage in a fresh, modern project
 
 ---
 # What is Sparrow ?
-- A modern and idiomatic C++20 implementation of the Apache Arrow memory format featuring value semantics, ranges, and iterators ...
-- Support for both typed and untyped arrays
-- Mutability for typed arrays
-- Convenient constructors and builders for easy usage
-- Zero dependencies (except when compiling with libc++: P0355R7 Timezone )
-- Passes all Apache Arrow integration tests, compatible with formats 1.0 to 1.5
-- Built-in std::formatters for all Sparrow types
-- Licensed under Apache License v2
+An idiomatic C++20 implementation of the Apache Arrow memory format featuring
+* value semantics, ranges, and iterators ...
+* Support for both typed and untyped arrays
+* Mutability for typed arrays
+* Convenient constructors and builders for easy usage
+* Built-in std::formatters for all Sparrow types
+
+---
+# Sparrow properties 
+* Zero dependencies ...
+* ... except when compiling with libc++ (P0355R7 Timezone)
+* Passes all Apache Arrow integration tests, compatible with formats 1.0 to 1.5
+* Packaged for Conda, Conan, Fedora and vcpkg
+* Licensed under Apache License v2
 
 ---
 
@@ -140,47 +154,120 @@ Johan Mabille</h4>
 
 ---
 
-# What's Next
-
-- Aligned allocations
-- sparrow-ipc
-- Mutability for unions, run end encoded, binary view, list and list view arrays
-- Sparrow tables
-- Computation kernels
+![bg  fit 70%](resources/sparrow_archi_1.svg)
 
 ---
 
-# Thanks!
+# Low level primitives:
 
-- Github: https://github.com/man-group/sparrow 
-- Available on CondaForge, VCPKG and Conan
+- nullable: represents null values, API similar to std::optional
+- dynamic_bitset: "Compressed" buffer of boolean
+- buffer: std::vector-like, able to take ownership of C-allocated arrays
+- any_allocator: type erasure for allocators
+
+---
+
+![bg  fit 70%](resources/sparrow_archi_2.svg)
+
+---
+
+# Arrow interface:
+
+- Proxy classes over ArrowArray and ArrowSchema
+- Can have ownership of ArrowArray and ArrowSchema
+
+---
+
+![bg  fit 70%](resources/sparrow_archi_3.svg)
+
+---
+
+# Typed arrays
+
+- One array class per layout (more than 10 layouts + variations)
+- 2 kinds of layouts: nested and non-nested
+- All arrays provide almost the same API
+
+---
+
+# Typed arrays
+
+![](resources/sparrow_crtp.png)
+
+---
+
+![bg  fit 70%](resources/sparrow_archi_4.svg)
+
+---
+
+# Type erasure
+
+![](resources/sparrow_type_erasure.png)
+
+---
+
+![bg  fit 70%](resources/sparrow_archi.svg)
+
+---
+
+# What's Next
+
+* Aligned allocations (implementation in progress)
+* Mutability (implementation in progress)
+* sparrow-ipc
+* Sparrow tables
+* Computation kernels
+
+---
+
+# Contributors
+
 <table class="invisible-table" style="table-layout: fixed">
   <tr>
     <td style="text-align: center; width: 200px;">
       <img src="resources/Alexis.png" class="circle-img">
-      <strong>Alexis Placet</strong>
+      <strong>Alexis Placet</strong><br>
+      @Alex-PLACET
     </td>
     <td style="text-align: center; width: 200px;">
       <img src="resources/Johann.png" class="circle-img">
-      <strong>Johan Mabille</strong>
+      <strong>Johan Mabille</strong><br>
+      @JohanMabille
     </td>
     <td style="text-align: center; width: 200px;">
       <img src="resources/Thorsten.png" class="circle-img">
-      <strong>Thorsten Beier</strong>
+      <strong>Thorsten Beier</strong><br>
+      @DerThorsten
     </td>
   </tr>
   <tr>
     <td style="text-align: center; width: 200px;">
       <img src="resources/Joël.png" class="circle-img">
-      <strong>Joël Lamotte</strong>
+      <strong>Joël Lamotte</strong><br>
+      @Klaim
     </td>
     <td style="text-align: center; width: 200px;">
       <img src="resources/Julien.png" class="circle-img">
-      <strong>Julien Jerphanion</strong>
+      <strong>Julien Jerphanion</strong><br>
+      @jjerphan
     </td>
     <td style="text-align: center; width: 200px;">
       <img src="resources/Hind.png" class="circle-img">
-      <strong>Hind Montassif</strong>
+      <strong>Hind Montassif</strong><br>
+      @Hind-M
     </td>
   </tr>
 </table>
+
+---
+
+# Resources
+
+- Apache Arrow specification: https://arrow.apache.org/docs/format/Columnar.html
+- Github repository: https://github.com/man-group/sparrow
+- Documentation: https://man-group.github.io/sparrow/index.html
+
+---
+
+# Thanks
+
